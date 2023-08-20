@@ -1,14 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
+using TMPro;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class HUDManager : MonoBehaviour
 {
-    public static GameManager instance;
-    public float Speed;
+    public static HUDManager instance;
+    // Start is called before the first frame update
+    public TextMeshProUGUI StateText;
 
-    public Controls Ctrls;
     void Awake()
     {
         //Singleton
@@ -22,25 +22,21 @@ public class GameManager : MonoBehaviour
             return;
         }
         DontDestroyOnLoad(gameObject);
-        Ctrls = new Controls();
-        Ctrls.Enable();
     }
+
 
     void Start()
     {
         
     }
 
+    // Update is called once per frame
     void Update()
     {
         
     }
 
-    public void UpdateSpeed(float speed){
-        Speed = speed;
-    }
-
-    void OnDisable(){
-        Ctrls.Disable();
+    public void UpdateStateText(string state){
+        StateText.text = "State: " + state;
     }
 }
