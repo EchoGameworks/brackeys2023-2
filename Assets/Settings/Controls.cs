@@ -71,15 +71,6 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
-                },
-                {
-                    ""name"": ""Restart"",
-                    ""type"": ""Button"",
-                    ""id"": ""e411900c-0fb6-4b2e-9c4b-bdcf2b1e0525"",
-                    ""expectedControlType"": ""Button"",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -137,15 +128,72 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                     ""action"": ""RollRight"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                }
+            ]
+        },
+        {
+            ""name"": ""Menu"",
+            ""id"": ""f3054b2c-aadd-4987-be56-a76b08afa7a5"",
+            ""actions"": [
+                {
+                    ""name"": ""Restart"",
+                    ""type"": ""Button"",
+                    ""id"": ""d8e653f5-2fdf-4264-ae30-301c4c666e18"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""MusicVolume"",
+                    ""type"": ""Button"",
+                    ""id"": ""b99d9b8c-109f-4121-b78b-f5bd19af628a"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SFXVolume"",
+                    ""type"": ""Button"",
+                    ""id"": ""f17112a9-abe0-4aba-a95e-86293667c545"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
                     ""name"": """",
-                    ""id"": ""b4094c49-d0c6-42be-b353-2089fbfb6b28"",
+                    ""id"": ""bfe14193-7e66-4951-a08a-2ffefbdcc97d"",
                     ""path"": ""<Keyboard>/r"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""Restart"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1fcd8cc9-f4a6-4dd9-b81a-67d5324b6e0f"",
+                    ""path"": ""<Keyboard>/m"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""MusicVolume"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""30dc1fc0-759c-4e66-9f59-c6726e0542fc"",
+                    ""path"": ""<Keyboard>/n"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SFXVolume"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -161,7 +209,11 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         m_Player_Move = m_Player.FindAction("Move", throwIfNotFound: true);
         m_Player_RollLeft = m_Player.FindAction("RollLeft", throwIfNotFound: true);
         m_Player_RollRight = m_Player.FindAction("RollRight", throwIfNotFound: true);
-        m_Player_Restart = m_Player.FindAction("Restart", throwIfNotFound: true);
+        // Menu
+        m_Menu = asset.FindActionMap("Menu", throwIfNotFound: true);
+        m_Menu_Restart = m_Menu.FindAction("Restart", throwIfNotFound: true);
+        m_Menu_MusicVolume = m_Menu.FindAction("MusicVolume", throwIfNotFound: true);
+        m_Menu_SFXVolume = m_Menu.FindAction("SFXVolume", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -228,7 +280,6 @@ public partial class @Controls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Move;
     private readonly InputAction m_Player_RollLeft;
     private readonly InputAction m_Player_RollRight;
-    private readonly InputAction m_Player_Restart;
     public struct PlayerActions
     {
         private @Controls m_Wrapper;
@@ -238,7 +289,6 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         public InputAction @Move => m_Wrapper.m_Player_Move;
         public InputAction @RollLeft => m_Wrapper.m_Player_RollLeft;
         public InputAction @RollRight => m_Wrapper.m_Player_RollRight;
-        public InputAction @Restart => m_Wrapper.m_Player_Restart;
         public InputActionMap Get() { return m_Wrapper.m_Player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -263,9 +313,6 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @RollRight.started += instance.OnRollRight;
             @RollRight.performed += instance.OnRollRight;
             @RollRight.canceled += instance.OnRollRight;
-            @Restart.started += instance.OnRestart;
-            @Restart.performed += instance.OnRestart;
-            @Restart.canceled += instance.OnRestart;
         }
 
         private void UnregisterCallbacks(IPlayerActions instance)
@@ -285,9 +332,6 @@ public partial class @Controls: IInputActionCollection2, IDisposable
             @RollRight.started -= instance.OnRollRight;
             @RollRight.performed -= instance.OnRollRight;
             @RollRight.canceled -= instance.OnRollRight;
-            @Restart.started -= instance.OnRestart;
-            @Restart.performed -= instance.OnRestart;
-            @Restart.canceled -= instance.OnRestart;
         }
 
         public void RemoveCallbacks(IPlayerActions instance)
@@ -305,6 +349,68 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         }
     }
     public PlayerActions @Player => new PlayerActions(this);
+
+    // Menu
+    private readonly InputActionMap m_Menu;
+    private List<IMenuActions> m_MenuActionsCallbackInterfaces = new List<IMenuActions>();
+    private readonly InputAction m_Menu_Restart;
+    private readonly InputAction m_Menu_MusicVolume;
+    private readonly InputAction m_Menu_SFXVolume;
+    public struct MenuActions
+    {
+        private @Controls m_Wrapper;
+        public MenuActions(@Controls wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Restart => m_Wrapper.m_Menu_Restart;
+        public InputAction @MusicVolume => m_Wrapper.m_Menu_MusicVolume;
+        public InputAction @SFXVolume => m_Wrapper.m_Menu_SFXVolume;
+        public InputActionMap Get() { return m_Wrapper.m_Menu; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(MenuActions set) { return set.Get(); }
+        public void AddCallbacks(IMenuActions instance)
+        {
+            if (instance == null || m_Wrapper.m_MenuActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_MenuActionsCallbackInterfaces.Add(instance);
+            @Restart.started += instance.OnRestart;
+            @Restart.performed += instance.OnRestart;
+            @Restart.canceled += instance.OnRestart;
+            @MusicVolume.started += instance.OnMusicVolume;
+            @MusicVolume.performed += instance.OnMusicVolume;
+            @MusicVolume.canceled += instance.OnMusicVolume;
+            @SFXVolume.started += instance.OnSFXVolume;
+            @SFXVolume.performed += instance.OnSFXVolume;
+            @SFXVolume.canceled += instance.OnSFXVolume;
+        }
+
+        private void UnregisterCallbacks(IMenuActions instance)
+        {
+            @Restart.started -= instance.OnRestart;
+            @Restart.performed -= instance.OnRestart;
+            @Restart.canceled -= instance.OnRestart;
+            @MusicVolume.started -= instance.OnMusicVolume;
+            @MusicVolume.performed -= instance.OnMusicVolume;
+            @MusicVolume.canceled -= instance.OnMusicVolume;
+            @SFXVolume.started -= instance.OnSFXVolume;
+            @SFXVolume.performed -= instance.OnSFXVolume;
+            @SFXVolume.canceled -= instance.OnSFXVolume;
+        }
+
+        public void RemoveCallbacks(IMenuActions instance)
+        {
+            if (m_Wrapper.m_MenuActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IMenuActions instance)
+        {
+            foreach (var item in m_Wrapper.m_MenuActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_MenuActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public MenuActions @Menu => new MenuActions(this);
     public interface IPlayerActions
     {
         void OnDive(InputAction.CallbackContext context);
@@ -312,6 +418,11 @@ public partial class @Controls: IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnRollLeft(InputAction.CallbackContext context);
         void OnRollRight(InputAction.CallbackContext context);
+    }
+    public interface IMenuActions
+    {
         void OnRestart(InputAction.CallbackContext context);
+        void OnMusicVolume(InputAction.CallbackContext context);
+        void OnSFXVolume(InputAction.CallbackContext context);
     }
 }

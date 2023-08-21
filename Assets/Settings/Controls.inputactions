@@ -49,15 +49,6 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
-                },
-                {
-                    "name": "Restart",
-                    "type": "Button",
-                    "id": "e411900c-0fb6-4b2e-9c4b-bdcf2b1e0525",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -115,15 +106,72 @@
                     "action": "RollRight",
                     "isComposite": false,
                     "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Menu",
+            "id": "f3054b2c-aadd-4987-be56-a76b08afa7a5",
+            "actions": [
+                {
+                    "name": "Restart",
+                    "type": "Button",
+                    "id": "d8e653f5-2fdf-4264-ae30-301c4c666e18",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 },
                 {
+                    "name": "MusicVolume",
+                    "type": "Button",
+                    "id": "b99d9b8c-109f-4121-b78b-f5bd19af628a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SFXVolume",
+                    "type": "Button",
+                    "id": "f17112a9-abe0-4aba-a95e-86293667c545",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
                     "name": "",
-                    "id": "b4094c49-d0c6-42be-b353-2089fbfb6b28",
+                    "id": "bfe14193-7e66-4951-a08a-2ffefbdcc97d",
                     "path": "<Keyboard>/r",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "Restart",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1fcd8cc9-f4a6-4dd9-b81a-67d5324b6e0f",
+                    "path": "<Keyboard>/m",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "MusicVolume",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "30dc1fc0-759c-4e66-9f59-c6726e0542fc",
+                    "path": "<Keyboard>/n",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SFXVolume",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

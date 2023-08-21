@@ -5,12 +5,16 @@ using UnityEngine;
 public class Obstacle : MonoBehaviour
 {
     public Vector3 MoveDirection;
-    public float DestoryTime = 10f;
+    public float DestroyTime = 20f;
+    Vector3 origScale;
 
     // Start is called before the first frame update
     void Start()
     {
-        Destroy(gameObject, DestoryTime);
+        origScale = this.transform.localScale;
+        this.transform.localScale = Vector3.zero;
+        LeanTween.scale(gameObject, origScale, 0.3f);
+        Destroy(gameObject, DestroyTime);
     }
 
     // Update is called once per frame

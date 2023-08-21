@@ -22,7 +22,8 @@ public class ObstacleSpawner : MonoBehaviour
                                             Random.Range(SpawnPositionMin.y, SpawnPositionMax.y),
                                             Random.Range(SpawnPositionMin.z, SpawnPositionMax.z)
         );
-        GameObject go = Instantiate(ObstacleList[0], spawnPosition, Quaternion.identity);
+        int spawnIndex = Random.Range(0, ObstacleList.Count);       
+        GameObject go = Instantiate(ObstacleList[spawnIndex], spawnPosition, Quaternion.identity);
 
     }
     

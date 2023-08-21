@@ -25,7 +25,22 @@ public class PlayerController : MonoBehaviour
     float CurrentSpeed;
     Vector3 velocity = Vector3.zero;
 
+    public float CurrentHeat = 0f;
+    public float HeathDissapationRate = 1f;
+    public float MaxHeat = 100f;
+    public float DiveHeatRate = 2f;
+    public float RollHeat = 10f;
+
+    public bool CanRoll = true;
+    public float RollCooldownMax = 1f;
+    public float RollCooldownTimer = 0f;
+    public float RollAdjustAmount = 3f;
+    public float CurrentRollAdjust = 0f;
+
+    public bool RollLeftReset = true;
+    public bool RollRightReset = true;
     public GameObject Avatar;
+    public SpriteRenderer PlayerSprite;
 
     void Start()
     {
@@ -36,6 +51,11 @@ public class PlayerController : MonoBehaviour
 
     public void Restart(){
         playerCtrls.Enable();
+        CurrentHeat = 0f;
+        MaxHeat = 100f;
+        HeathDissapationRate = 1f;
+        DiveHeatRate = 2f;
+        RollHeat = 10f;
         Fall();
     }
 
@@ -81,6 +101,9 @@ public class PlayerController : MonoBehaviour
 
         bool inputDive = playerCtrls.Dive.ReadValue<float>() > 0.1f;
         bool inputGlide = playerCtrls.Glide.ReadValue<float>() > 0.1f;
+        bool inputRollRight = playerCtrls.RollRight.ReadValue<float>() > 0.1f;
+        bool inputRollLeft = playerCtrls.RollLeft.ReadValue<float>() > 0.1f;
+
 
         //Debug.Log(inputDive + " | " + inputGlide);
         if(inputDive){
@@ -92,8 +115,82 @@ public class PlayerController : MonoBehaviour
         else if(CurrentFallState != FallState.Normal) {
             Fall();
         }
-        this.transform.position = Vector3.SmoothDamp(transform.position, worldPos, ref velocity, 1f / CurrentSpeed);
-        //this.transform.position = worldPos;
+
+
+        
+        if(CurrentFallState == FallState.Dive) {
+            CurrentHeat += DiveHeatRate * Time.deltaTime;            
+        }
+        else{
+            CurrentHeat -= HeathDissapationRate * Time.deltaTime;
+        }
+
+
+        //Debug.Log($"{inputRollLeft} | {inputRollRight}");
+        if(CanRoll){          
+            if(inputRollLeft && RollLeftReset){
+                Debug.Log("Roll Left");
+                RollLeftReset = false;
+                LeanTween.rotateY(gameObject, 30f, 0.3f);
+                CurrentRollAdjust = -RollAdjustAmount;
+                RollCooldownTimer = RollCooldownMax;
+            }
+            else if(inputRollRight && RollRightReset){
+                Debug.Log("Roll Right");
+                LeanTween.rotateY(gameObject, -30f, 0.3f);
+                RollRightReset = false;
+                CurrentRollAdjust = RollAdjustAmount;
+                RollCooldownTimer = RollCooldownMax;
+            }
+        }
+
+        this.transform.position = Vector3.SmoothDamp(transform.position, worldPos + new Vector3(CurrentRollAdjust, 0f, 0f), ref velocity, 1f / CurrentSpeed);
+
+        RollRightReset = playerCtrls.RollRight.ReadValue<float>() <= 0.1f;
+        RollLeftReset = playerCtrls.RollLeft.ReadValue<float>() <= 0.1f;
+
+        if(RollCooldownTimer > 0){
+            if(CanRoll){
+                CanRoll = false;
+                PlayerSprite.color = Color.gray;
+                CurrentHeat += RollHeat;
+                HUDManager.instance.UpdateCanRoll(CanRoll);
+            }
+
+            RollCooldownTimer -= Time.deltaTime;
+        }
+        else if(RollCooldownTimer < 0) {
+            RollCooldownTimer = 0f;
+
+            if(!CanRoll){
+                ReleaseRoll();
+            }
+        }
+
+        if(RollLeftReset && RollRightReset){
+            AbandonRoll();
+        }
+
+        if(CurrentHeat < 0){
+            CurrentHeat = 0;
+        }
+
+        HUDManager.instance.UpdateHeat(CurrentHeat);
+        if(CurrentHeat >= MaxHeat){
+            Debug.LogWarning("You Lose");
+        }
+    }
+
+    private void AbandonRoll(){
+        LeanTween.rotateY(gameObject, 0f, 0.3f);
+        PlayerSprite.color = Color.white;
+        CurrentRollAdjust = 0f;
+    }
+
+    private void ReleaseRoll(){
+        CanRoll = true;
+        AbandonRoll();
+        HUDManager.instance.UpdateCanRoll(CanRoll);
     }
 
     private void OnTriggerEnter(Collider other)
